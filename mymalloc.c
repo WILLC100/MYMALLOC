@@ -10,11 +10,8 @@ static char memory[MEMSIZE];
 
 void* mymalloc(size_t size,  char* file, int line ){
 
-    
     metadata* first = (metadata*)(&(memory[0]));
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
-
-    
 
     if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
 
@@ -62,12 +59,40 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     }
     return NULL;
-     
-    
 
 }
 
 void myfree(void* pointer,  char* file, int line){
+
+    //search through all blocks to 
+    metadata* iterator = (metadata*) &(memory[0]);
+    char* specific = (char*)pointer; 
+
+    while(iterator != NULL){
+
+        if(&*specific == &*(iterator->blocklocation)){
+            
+            if(iterator->istaken == 0){
+                
+                perror("Block has already been freed, cannot double free\n");
+                exit(EXIT_FAILURE);
+            }
+
+            
+
+
+            return;
+        }
+
+        iterator = iterator->next; 
+
+    }
+
+
+    
+    printf("Pointer %p does not point to the start of an allocated chunk", pointer);
+    perror("Location address cannot be freed");
+    exit(EXIT_FAILURE);
 
     return;
 }
