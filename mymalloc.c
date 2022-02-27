@@ -14,11 +14,12 @@ void* mymalloc(size_t size,  char* file, int line ){
     metadata* first = (metadata*)(&(memory[0]));
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
 
-    void* temp = NULL;
+    
 
-    if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
+    if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
 
         if(size > MEMSIZE){
+            printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory.\n");
             exit(EXIT_FAILURE);
         }
@@ -43,20 +44,24 @@ void* mymalloc(size_t size,  char* file, int line ){
         }
 
         if(size + occupied > MEMSIZE){
+            printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
 
         //arranges data for it 
-        iterator->next = (metadata*)&(memory[occupied]);
-        
 
+        metadata* newnode = (metadata*)&(memory[occupied]);
+        iterator->next = newnode; 
+        newnode->istaken = 1; 
+        newnode->blocksize = size; 
+        newnode->blocklocation = &(memory[occupied+offset]);
+        newnode->next = NULL;
 
-
-
+        return newnode->blocklocation;
 
     }
-    return temp;
+    return NULL;
      
     
 
