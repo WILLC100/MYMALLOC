@@ -16,7 +16,7 @@ typedef struct node {
 
 } metadata;
 
-void* malloc(size_t size ){
+void* mymalloc(size_t size ){
 
     
     unsigned int requestedblocksize = size; //holds the requested block size
@@ -46,7 +46,7 @@ void* malloc(size_t size ){
 
 }
 
-void free(void* pointer ){
+void myfree(void* pointer ){
 
 
 }
