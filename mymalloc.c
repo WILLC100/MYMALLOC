@@ -19,7 +19,7 @@ void* mymalloc(size_t size,  char* file, int line ){
     if(!memory[0]){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
 
 
-        metadata* first = (metadata*)(memory[0]);
+        metadata* first = (metadata*)&(memory[0]);
 
         memory[0] = 1; 
         first->blocksize = requestedblocksize; 
