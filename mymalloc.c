@@ -11,25 +11,41 @@ static char memory[MEMSIZE];
 void* mymalloc(size_t size,  char* file, int line ){
 
     
-    unsigned int requestedblocksize = size; //holds the requested block size
+    metadata* first = (metadata*)(&(memory[0]));
+    unsigned int offset =  sizeof(metadata); //size of each node that is stored
 
     void* temp = NULL;
 
+    if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
 
-    if(!memory[0]){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
+        if(size > MEMSIZE){
+            perror("Not enough memory.\n");
+            exit(EXIT_FAILURE);
+        }
 
-
-        metadata* first = (metadata*)&(memory[0]);
-
-        memory[0] = 1; 
-        first->blocksize = requestedblocksize; 
-        first->nextblock = NULL;
-        first->blocklocation = &(memory[13]); 
+        first->istaken = 1; 
+        first->blocksize = size; 
+        first->blocklocation = &(memory[offset]); 
+        first->next = NULL;
         
-
-        
+        return first->blocklocation; 
 
     }else{
+        unsigned int occupied = offset + first->blocksize; 
+
+        metadata* iterator = first; 
+        while(iterator->next!=NULL){
+            
+            occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space
+            iterator = iterator->next;
+        }
+
+        if(size + occupied > MEMSIZE){
+            perror("Not enough memory");
+            exit(EXIT_FAILURE);
+        }
+
+
 
 
     }
