@@ -62,10 +62,19 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 }
 
+void coalesce(metadata* pointer){
+
+    metadata* current = pointer; 
+    metadata* 
+
+
+}
+
 void myfree(void* pointer,  char* file, int line){
 
-    //search through all blocks to 
+    //search through all blocks to the correct one 
     metadata* iterator = (metadata*) &(memory[0]);
+    metadata* behinditerator = iterator; 
     char* specific = (char*)pointer; 
 
     while(iterator != NULL){
@@ -78,12 +87,13 @@ void myfree(void* pointer,  char* file, int line){
                 exit(EXIT_FAILURE);
             }
 
-            
-
+            iterator->istaken = 0;
+            coalesce(behinditerator);
 
             return;
         }
 
+        behinditerator = iterator;
         iterator = iterator->next; 
 
     }
