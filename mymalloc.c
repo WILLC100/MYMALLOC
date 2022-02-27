@@ -31,10 +31,12 @@ void* mymalloc(size_t size,  char* file, int line ){
         return first->blocklocation; 
 
     }else{
+
+        //Gets to the next usable location 
         unsigned int occupied = offset + first->blocksize; 
 
         metadata* iterator = first; 
-        while(iterator->next!=NULL){
+        while(iterator->next!=NULL){ 
             
             occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space
             iterator = iterator->next;
@@ -44,6 +46,11 @@ void* mymalloc(size_t size,  char* file, int line ){
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
+
+        //arranges data for it 
+        iterator->next = (metadata*)&(memory[occupied]);
+        
+
 
 
 
