@@ -7,27 +7,19 @@
 
 static char memory[MEMSIZE]; 
 
-typedef struct node {
 
-    unsigned char isfree;    // 0 for false, 1 for true 
-    unsigned int blocksize; //size of requested block 
-    struct node* nextblock; // points to next metadata node; 
-    void* blocklocation;    //address of this node's block 
-
-} metadata;
-
-void* mymalloc(size_t size ){
+void* mymalloc(size_t size,  char* file, int line ){
 
     
     unsigned int requestedblocksize = size; //holds the requested block size
   
     
- 
+    void* temp = NULL;
 
     if(!memory[0]){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
 
 
-        metadata* first = &(memory[0]);
+        metadata* first = (metadata*)(memory[0]);
 
         memory[0] = 1; 
         first->blocksize = requestedblocksize; 
@@ -41,12 +33,13 @@ void* mymalloc(size_t size ){
 
 
     }
+    return temp; 
      
     
 
 }
 
-void myfree(void* pointer ){
+void myfree(void* pointer  char* file, int line){
 
 
 }
