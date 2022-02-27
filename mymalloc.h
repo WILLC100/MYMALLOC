@@ -3,11 +3,11 @@
 #define _MYMALLOC_H_ 
 
 
-typedef struct node {
+typedef struct node { //this node type holds the metadata of each block. 
 
-    unsigned char isfree;    // 0 for false, 1 for true 
+    unsigned char istaken;   // 0 for false, 1 for true 
     unsigned int blocksize; //size of requested block 
-    struct node* nextblock; // points to next metadata node; 
+    struct node* next; //points to next metadata node; 
     void* blocklocation;    //address of this node's block 
 
 } metadata;
