@@ -12,9 +12,9 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     
     unsigned int requestedblocksize = size; //holds the requested block size
-  
-    
+
     void* temp = NULL;
+
 
     if(!memory[0]){ //first byte check. if 0: first block is free create allocation immediately, else create data structure
 
@@ -33,15 +33,15 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 
     }
-    return temp; 
+    return temp;
      
     
 
 }
 
-void myfree(void* pointer  char* file, int line){
+void myfree(void* pointer,  char* file, int line){
 
-
+    return;
 }
 
 
