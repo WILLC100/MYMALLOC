@@ -61,17 +61,6 @@ void* mymalloc(size_t size,  char* file, int line ){
             iterator = iterator->next;
 
         }
-
-
-
- /*
-    
-        if( (size + occupied  ) > MEMSIZE){ // temp size error should update to be more encompassing. 
-            printf("Malloc failed for %s line %d\n", file, line);
-            perror("Not enough memory");
-            exit(EXIT_FAILURE);
-        }
-*/
     
         if(candidate != NULL){ //if a free block in chain can be used instead of addending to list; 
 
@@ -87,7 +76,6 @@ void* mymalloc(size_t size,  char* file, int line ){
                 freenode->next = temp; 
                 freenode->istaken = 0; 
                 freenode->blocklocation = &(memory[candoccupied+offset+size+offset]);
-
                 
             }
 
@@ -96,6 +84,12 @@ void* mymalloc(size_t size,  char* file, int line ){
         }
 
         //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
+
+        if( (size + occupied  ) > MEMSIZE){ // temp size error should update to be more encompassing. 
+            printf("Malloc failed for %s line %d\n", file, line);
+            perror("Not enough memory");
+            exit(EXIT_FAILURE);
+        }
 
         metadata* newnode = (metadata*)&(memory[occupied]);
         iterator->next = newnode; 
