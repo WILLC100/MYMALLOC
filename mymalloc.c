@@ -13,14 +13,34 @@ void* mymalloc(size_t size,  char* file, int line ){
     metadata* first = (metadata*)(&(memory[0]));
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
 
-    if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
-
-        if(size > MEMSIZE){
+    if(size > (MEMSIZE - offset)){
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory.\n");
             exit(EXIT_FAILURE);
-        }
+    }
 
+   if (size<=32){
+       size = 32;
+   }else if (size<=64){
+       size = 64;
+   }else if (size<=128){
+       size = 128;
+   }else if (size<=256){
+       size = 256;
+   }else if (size<=512){
+       size = 512;
+   }else if (size<=1024){
+       size = 1024;
+   }else if (size<=2048){
+       size = 2048;
+   }else if (size<=3072){
+       size = 3072;
+   }
+
+    
+
+    if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
+        
         first->istaken = 1; 
         first->blocksize = size; 
         first->blocklocation = &(memory[offset]); 
@@ -30,18 +50,20 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     }else{
 
-       
-
         //Gets to the next usable location 
         unsigned int occupied = offset + first->blocksize; 
 
         metadata* iterator = first; 
         metadata* candidate = NULL;
         metadata* candidatenext = NULL;
+        unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
-        while(iterator->next!=NULL){ 
 
-            occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space
+        while(iterator->next!=NULL){ 
+            
+          
+            occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
+            
 
             if(iterator->next->istaken == 0 && iterator->next->blocksize > size){ // keeps track of best usable location based on size
                 
@@ -50,6 +72,7 @@ void* mymalloc(size_t size,  char* file, int line ){
                     candidatediff = iterator->next->blocksize - size; 
                     candidate = iterator->next; 
                     candidatenext = candidate->next; 
+                    candoccupied = occupied;
 
                 }
 
@@ -57,16 +80,22 @@ void* mymalloc(size_t size,  char* file, int line ){
             iterator = iterator->next;
 
         }
-
-        if(size + occupied > MEMSIZE){
+    
+        if( (size + occupied  ) > MEMSIZE){
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
-      
+    
         if(candidate != NULL){
 
-            
+            candidate->istaken = 1; 
+            candidate->blocklocation = &(memory[candoccupied]);
+
+            if(candidate->blocksize - size > offset){
+
+
+            }
 
 
         }
