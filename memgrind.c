@@ -12,7 +12,7 @@ int main(int argc, char* argv[] ){ // runs program here
 
      FILE* fp = fopen(argv[1], "r");
     if (!fp) {
-        perror("File cannot be opened.");
+        perror("Test File cannot be opened.");
         exit(EXIT_FAILURE);
     }
 /*
