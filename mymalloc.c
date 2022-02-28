@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-#define MEMSIZE 4096 //change number of memsize to change total memory space. 
+#define MEMSIZE 5120 //change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE]; 
 
@@ -14,7 +14,7 @@ void* mymalloc(size_t size,  char* file, int line ){
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
 
     //alighnment protocol. Gets buffer to some value divisible by 4. Clean
-
+  
     unsigned int remainder = size%4;
     remainder = 4-remainder; 
     size = size+remainder;
@@ -60,7 +60,7 @@ void* mymalloc(size_t size,  char* file, int line ){
             occupied = occupied + offset + iterator->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
             
             if(iterator->next == NULL){
-                end = iterator->next; 
+                end = iterator; 
             }
             iterator = iterator->next;
 
