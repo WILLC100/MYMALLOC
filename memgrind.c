@@ -59,10 +59,10 @@ int main(int argc, char* argv[] ){ // runs program here
             ptr[j] = NULL;
         }
         gettimeofday(&endTime, NULL);
-        //printf("%ld\n", endTime.tv_sec);
+        
         totalTimeB = totalTimeB + ((endTime.tv_sec - startTime.tv_sec)*1000000
          + (endTime.tv_usec - startTime.tv_usec));
-
+       // printf("Total time: %f\n", totalTimeB); prints total time after every iteration of the test of 120.
     }
     printf("The mean time to execute Test 1 %f microseconds\n", totalTimeB/100);
 
