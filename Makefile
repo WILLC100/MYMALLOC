@@ -8,9 +8,12 @@ OBJ =  memgrind.o mymalloc.o
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+all: mymalloc
+
 mymalloc: $(OBJ)
-	$(CC) -o $@ $< $(CFLAGS)
- 
+	$(CC) $(CFLAGS) $(OBJ) -o $@
+
+mymalloc.o: mymalloc.h
 
 clean:
 	rm -f *.o $(OUTPUT)
