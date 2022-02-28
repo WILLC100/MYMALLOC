@@ -3,15 +3,23 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-#define MEMSIZE 5120 //change number of memsize to change total memory space. 
+#define MEMSIZE 4096 //change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE]; 
 
 
 void* mymalloc(size_t size,  char* file, int line ){
 
-    metadata* first = (metadata*)(&(memory[0]));
+    metadata* first = (metadata*)(&(memory[0])); 
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
+   
+    //Undersize error 
+
+    if(size == 0){
+        printf("Malloc failed for file %s line %d\n", file, line);
+        perror("Cannot allocate 0 memory\n");
+        exit(EXIT_FAILURE);
+    }
 
     //alighnment protocol. Gets buffer to some value divisible by 4. Clean
   
@@ -19,14 +27,17 @@ void* mymalloc(size_t size,  char* file, int line ){
     remainder = 4-remainder; 
     size = size+remainder;
 
-    if(size > (MEMSIZE - offset)){ //basic oversize error. 
+    //Initial oversize error
+
+    if(size > (MEMSIZE - offset)){ 
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory.\n");
             exit(EXIT_FAILURE);
     }
+    
+    //Allocations 
 
-
-    if(first->istaken ==0 && first->blocksize == 0){ //first byte check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
+    if(first->istaken ==0 && first->blocksize == 0){ //first node check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
         
         first->istaken = 1; 
         first->blocksize = size; 
@@ -63,9 +74,6 @@ void* mymalloc(size_t size,  char* file, int line ){
                 end = iterator; 
             }
             iterator = iterator->next;
-
-
-
         }
     
         if(candidate != NULL){ //if a free block in chain can be used instead of addending to list; 
@@ -134,21 +142,35 @@ void coalesce(metadata* first){
 
 void myfree(void* pointer,  char* file, int line){
 
+    char* lead = (char*)pointer; 
+    
+    if(&(*lead) < &memory[0]){ // underbounds error 
+        perror("Pointer underbounds of memory\n");
+        exit(EXIT_FAILURE);
+    }
+    if(&(*lead) > &memory[MEMSIZE-1]){ // overbounds error 
+        perror("Pointer overbounds of memory\n");
+        exit(EXIT_FAILURE);
+    }
+
+
     //search through all blocks to the correct one 
     metadata* iterator = (metadata*) &(memory[0]);
     metadata* prior = iterator;
     char* specific = (char*)pointer; 
-    
+     
 
     while(iterator != NULL){
 
         if(specific == (iterator->blocklocation)){
             
+
             if(iterator->istaken == 0){
                 
                 perror("Block has already been freed, cannot double free\n");
                 exit(EXIT_FAILURE);
             }
+
 
             iterator->istaken = 0;
             coalesce(prior);
@@ -161,8 +183,8 @@ void myfree(void* pointer,  char* file, int line){
 
     }
     
-    printf("Pointer %p does not point to the start of an allocated chunk", pointer);
-    perror("Location address cannot be freed");
+    printf("Pointer %p does not point to the start of an allocated chunk\n", pointer);
+    perror("Location address cannot be freed\n");
     exit(EXIT_FAILURE);
 
     return;
