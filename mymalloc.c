@@ -19,6 +19,12 @@ void* mymalloc(size_t size,  char* file, int line ){
             exit(EXIT_FAILURE);
     }
 
+    //alighnment protocol. Gets buffer to some value divisible by 4. Clean
+
+    unsigned int remainder = size%4;
+    remainder = 4-remainder; 
+    size = size+remainder;
+
     
 
     if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
@@ -37,7 +43,6 @@ void* mymalloc(size_t size,  char* file, int line ){
 
         metadata* iterator = first; 
         metadata* candidate = NULL;
-        metadata* candidatenext = NULL;
         unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
 
@@ -49,8 +54,7 @@ void* mymalloc(size_t size,  char* file, int line ){
                 if(iterator->next->blocksize - size < candidatediff){ 
                     
                     candidatediff = iterator->next->blocksize - size; 
-                    candidate = iterator->next; 
-                    candidatenext = candidate->next; 
+                    candidate = iterator->next;     
                     candoccupied = occupied;
 
                 }
@@ -108,15 +112,17 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 void coalesce(metadata* header){
 
-    metadata* current = header; 
+ /*   metadata* current = header; 
     metadata* prior = header; 
 
     while(current != NULL){
+        
+
 
 
 
     }
-
+ */
 }
 
 void myfree(void* pointer,  char* file, int line){
@@ -147,10 +153,6 @@ void myfree(void* pointer,  char* file, int line){
         iterator = iterator->next; 
 
     }
-
-    
-
-
     
     printf("Pointer %p does not point to the start of an allocated chunk", pointer);
     perror("Location address cannot be freed");
