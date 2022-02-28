@@ -19,26 +19,6 @@ void* mymalloc(size_t size,  char* file, int line ){
             exit(EXIT_FAILURE);
     }
 
-    //uniform size standards 
-
-   if (size<=32){
-       size = 32;
-   }else if (size<=64){
-       size = 64;
-   }else if (size<=128){
-       size = 128;
-   }else if (size<=256){
-       size = 256;
-   }else if (size<=512){
-       size = 512;
-   }else if (size<=1024){
-       size = 1024;
-   }else if (size<=2048){
-       size = 2048;
-   }else if (size<=3072){
-       size = 3072;
-   }
-
     
 
     if(memory[0] == 0){ //first byte check. if 0: first block is free create allocation immediately, else add to data structure
@@ -126,19 +106,16 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 }
 
-void coalesce(metadata* pointer){
+void coalesce(metadata* header){
 
-    metadata* current = pointer; 
-    metadata* currentnext = pointer->next; 
+    metadata* current = header; 
+    metadata* prior = header; 
 
+    while(current != NULL){
 
-
-    if(currentnext->next != NULL){
-        
 
 
     }
-
 
 }
 
