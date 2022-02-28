@@ -13,11 +13,13 @@ void* mymalloc(size_t size,  char* file, int line ){
     metadata* first = (metadata*)(&(memory[0]));
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
 
-    if(size > (MEMSIZE - offset)){
+    if(size > (MEMSIZE - offset)){ //basic oversize error. 
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory.\n");
             exit(EXIT_FAILURE);
     }
+
+    //uniform size standards 
 
    if (size<=32){
        size = 32;
@@ -59,10 +61,7 @@ void* mymalloc(size_t size,  char* file, int line ){
         unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
 
-        while(iterator->next!=NULL){ 
-            
-          
-            occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
+        while(iterator->next!=NULL){  
             
 
             if(iterator->next->istaken == 0 && iterator->next->blocksize > size){ // keeps track of best usable location based on size
@@ -77,29 +76,41 @@ void* mymalloc(size_t size,  char* file, int line ){
                 }
 
             }
+            occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
+
             iterator = iterator->next;
 
         }
     
-        if( (size + occupied  ) > MEMSIZE){
+        if( (size + occupied  ) > MEMSIZE){ // temp size error should update to be more encompassing. 
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
     
-        if(candidate != NULL){
+        if(candidate != NULL){ //if a free block in chain can be used instead of addending to list; 
 
             candidate->istaken = 1; 
-            candidate->blocklocation = &(memory[candoccupied]);
 
-            if(candidate->blocksize - size > offset){
+            if(candidate->blocksize - size > offset){ // if the memory block is large enough to partition into an occupied smaller block + free block
+                
+                metadata* freenode = (metadata*)&(memory[offset+candoccupied+size]);
+                freenode->blocksize = candidate->blocksize-size-offset;
+                candidate->blocksize = size; 
+                metadata* temp = candidate->next; 
+                candidate->next = freenode; 
+                freenode->next = temp; 
+                freenode->istaken = 0; 
+                freenode->blocklocation = &(memory[candoccupied+offset+size+offset]);
 
-
+                
             }
 
+            return candidate->blocklocation; 
 
         }
-        //arranges data for it 
+
+        //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
 
         metadata* newnode = (metadata*)&(memory[occupied]);
         iterator->next = newnode; 
