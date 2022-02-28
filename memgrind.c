@@ -8,67 +8,51 @@
 
 int main(int argc, char* argv[] ){ // runs program here 
 
-    //must initialize first metadata node with byte manipulation 
-
-     FILE* fp = fopen(argv[1], "r");
-    if (!fp) {
-        perror("Test File cannot be opened.");
-        exit(EXIT_FAILURE);
-    }
-/*
-    unsigned int count;
-    fscanf(fp, "%d", &count);
-    char* test1 =NULL;
+    int *ptr[1000];
+    struct timeval startTime;
+    struct timeval endTime;
+    float totalTimeOne = 0;
+    float totalTimeTwo = 0;
+   // int totalTimeThree = 0;
+   // int totalTimeFour = 0;
     
-    unsigned int wack = 0;
-
-    char** test1arr = malloc(sizeof(char*)*count);
-
-    for(int i =0; i<count; i++ ){
-
-        test1 = malloc(1);
-
-        test1arr[i] = test1;
-        
-        printf("%p ", test1arr[i]);
-
-        if((i+1)%6 == 0){         
-            printf("Line %d", wack);
-            printf("\n");
-            wack = wack+1;
-        }
-    }
-    for(int i=0; i<count;i++){
-        free(test1arr[i]);
-    }
-    free(test1arr);
- */
-
-    //test 1
-
-    int* ptr[1000];
-    struct timeval startTime; 
-    struct timeval endTime; 
-    float totalTimeB = 0;
-    for(int i =0; i<100; i++){
-        gettimeofday(&startTime, NULL);
-        for(int j=0; j<120; j++){
-            
-            ptr[j] = (int*)malloc(1);
+    //Test1
+    for(int i = 0; i < 50; i++){
+        gettimeofday(&startTime, 0);
+        for(int j = 0; j < 120; j++){
+            ptr[j] = (int*)(malloc(1));
+          
+           
             free(ptr[j]);
             ptr[j] = NULL;
         }
-        gettimeofday(&endTime, NULL);
-        
-        totalTimeB = totalTimeB + ((endTime.tv_sec - startTime.tv_sec)*1000000
-         + (endTime.tv_usec - startTime.tv_usec));
-       // printf("Total time: %f\n", totalTimeB); prints total time after every iteration of the test of 120.
+        gettimeofday(&endTime, 0);
+        totalTimeOne = totalTimeOne + ((endTime.tv_sec-startTime.tv_sec)*1000000 
+        + (endTime.tv_usec-startTime.tv_usec));
     }
-    printf("The mean time to execute Test 1 %f microseconds\n", totalTimeB/100);
 
+    printf("The average time to execute Test 1 %f milliseconds\n", totalTimeOne/50);
+    
+    //Test2
+    for(int i = 0; i < 50; i++){
+        gettimeofday(&startTime, 0);
+        for(int j = 0; j < 120; j++){
+            ptr[j] = (int *) malloc(1);
+          //  printf("%d %p \n", j, ptr[j]); last allocation from 76 onwards DNE
+        }
+        
+        for(int g = 0; g < 120; g++){
+         //   printf("%d %p \n", i, ptr[g]); // round 84, test 76. 
+            free(ptr[g]);
+            ptr[g] = NULL;
+        }
+        gettimeofday(&endTime, 0);
+        totalTimeTwo = totalTimeTwo + ((endTime.tv_sec-startTime.tv_sec)*1000000
+        + (endTime.tv_usec-startTime.tv_usec));
+    }
+    
+  
+    printf("The average time to execute Test 2 %f milliseconds\n", totalTimeTwo/50);
 
-    fclose(fp);
-
-    return 0; 
-
+    return EXIT_SUCCESS;
 }
