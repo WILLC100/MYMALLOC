@@ -30,14 +30,32 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     }else{
 
+       
+
         //Gets to the next usable location 
         unsigned int occupied = offset + first->blocksize; 
 
         metadata* iterator = first; 
+        metadata* candidate = NULL;
+        metadata* candidatenext = NULL;
+        unsigned int candidatediff = MEMSIZE;
         while(iterator->next!=NULL){ 
-            
+
             occupied = occupied + offset + iterator->next->blocksize;    //keeps track of total occupied space
+
+            if(iterator->next->istaken == 0 && iterator->next->blocksize > size){ // keeps track of best usable location based on size
+                
+                if(iterator->next->blocksize - size < candidatediff){ 
+                    
+                    candidatediff = iterator->next->blocksize - size; 
+                    candidate = iterator->next; 
+                    candidatenext = candidate->next; 
+
+                }
+
+            }
             iterator = iterator->next;
+
         }
 
         if(size + occupied > MEMSIZE){
@@ -45,7 +63,13 @@ void* mymalloc(size_t size,  char* file, int line ){
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
+      
+        if(candidate != NULL){
 
+            
+
+
+        }
         //arranges data for it 
 
         metadata* newnode = (metadata*)&(memory[occupied]);
@@ -65,7 +89,15 @@ void* mymalloc(size_t size,  char* file, int line ){
 void coalesce(metadata* pointer){
 
     metadata* current = pointer; 
-    metadata* 
+    metadata* currentnext = pointer->next; 
+
+
+
+    if(currentnext->next != NULL){
+        
+
+
+    }
 
 
 }
@@ -74,12 +106,13 @@ void myfree(void* pointer,  char* file, int line){
 
     //search through all blocks to the correct one 
     metadata* iterator = (metadata*) &(memory[0]);
-    metadata* behinditerator = iterator; 
+    metadata* header = iterator;
     char* specific = (char*)pointer; 
+    
 
     while(iterator != NULL){
 
-        if(&*specific == &*(iterator->blocklocation)){
+        if(specific == (iterator->blocklocation)){
             
             if(iterator->istaken == 0){
                 
@@ -88,15 +121,17 @@ void myfree(void* pointer,  char* file, int line){
             }
 
             iterator->istaken = 0;
-            coalesce(behinditerator);
-
-            return;
+            coalesce(header);
+           
+            return; 
         }
 
-        behinditerator = iterator;
+        
         iterator = iterator->next; 
 
     }
+
+    
 
 
     
