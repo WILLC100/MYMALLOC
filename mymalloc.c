@@ -40,6 +40,7 @@ void* mymalloc(size_t size,  char* file, int line ){
         unsigned int occupied = 0; 
 
         metadata* iterator = first; 
+        metadata* end = NULL;
         metadata* candidate = NULL;
         unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
@@ -57,8 +58,13 @@ void* mymalloc(size_t size,  char* file, int line ){
                 }
             }
             occupied = occupied + offset + iterator->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
-
+            
+            if(iterator->next == NULL){
+                end = iterator->next; 
+            }
             iterator = iterator->next;
+
+
 
         }
     
@@ -85,14 +91,14 @@ void* mymalloc(size_t size,  char* file, int line ){
 
         //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
 
-        if( (size + occupied  ) > MEMSIZE){ // temp size error should update to be more encompassing. 
+        if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory");
             exit(EXIT_FAILURE);
         }
 
         metadata* newnode = (metadata*)&(memory[occupied]);
-        iterator->next = newnode; 
+        end->next = newnode; 
         newnode->istaken = 1; 
         newnode->blocksize = size; 
         newnode->blocklocation = &(memory[occupied+offset]);
