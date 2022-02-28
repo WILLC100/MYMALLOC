@@ -110,26 +110,32 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 }
 
-void coalesce(metadata* header){
+void coalesce(metadata* first){
 
- /*   metadata* current = header; 
-    metadata* prior = header; 
+    metadata* current = first;
+    metadata* cnext = first->next; 
 
-    while(current != NULL){
+    while(cnext != NULL){
+       
         
+        if(current->istaken == 0 && cnext->istaken == 0){
 
+            current->next = cnext->next; 
+            current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
 
-
-
+        }
+        current = current->next;
+        cnext = cnext->next; 
     }
- */
+    return; 
+ 
 }
 
 void myfree(void* pointer,  char* file, int line){
 
     //search through all blocks to the correct one 
     metadata* iterator = (metadata*) &(memory[0]);
-    metadata* header = iterator;
+    metadata* prior = iterator;
     char* specific = (char*)pointer; 
     
 
@@ -144,12 +150,12 @@ void myfree(void* pointer,  char* file, int line){
             }
 
             iterator->istaken = 0;
-            coalesce(header);
+            coalesce(prior);
            
             return; 
         }
 
-        
+        prior = iterator; 
         iterator = iterator->next; 
 
     }
