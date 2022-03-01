@@ -11,6 +11,8 @@ static char memory[MEMSIZE];
 void* mymalloc(size_t size,  char* file, int line ){
 
     metadata* first = (metadata*)(&(memory[0])); 
+    
+    
     unsigned int offset =  sizeof(metadata); //size of each node that is stored
    
     //Undersize error 
@@ -38,10 +40,12 @@ void* mymalloc(size_t size,  char* file, int line ){
     //Allocations 
 
     if(first->istaken ==0 && first->blocksize == 0){ //first node check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
-        
+
+        printf("First success");
         first->istaken = 1; 
         first->blocksize = size; 
         first->blocklocation = &(memory[offset]); 
+        first->next = NULL;
      
         return first->blocklocation; 
 
@@ -59,9 +63,9 @@ void* mymalloc(size_t size,  char* file, int line ){
         while(iterator !=NULL){  
             
 
-            if(iterator ->istaken == 0 && iterator->blocksize > size){ // keeps track of best usable location based on size
+            if(iterator ->istaken == 0 && iterator->blocksize >= size){ // keeps track of best usable location based on size
                 
-                if(iterator->blocksize - size < candidatediff){ //minimum
+                if(iterator->blocksize - size <= candidatediff){ //minimum
                     
                     candidatediff = iterator->blocksize - size; 
                     candidate = iterator;     
@@ -84,21 +88,25 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(candidate->blocksize - size > offset){ // if the memory block is large enough to partition into an occupied smaller block + free block
                 
                 metadata* freenode = (metadata*)&(memory[offset+candoccupied+size]);
-                freenode->blocksize = candidate->blocksize-size-offset;
+              
                 candidate->blocksize = size; 
                 metadata* temp = candidate->next; 
                 candidate->next = freenode; 
                 freenode->next = temp; 
+
                 freenode->istaken = 0; 
                 freenode->blocklocation = &(memory[candoccupied+offset+size+offset]);
+                freenode->blocksize = candidate->blocksize-size-offset;
                 
             }
-
+            printf("Candidate Success \n");
+ 
             return candidate->blocklocation; 
 
         }
 
         //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
+
 
         if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
             printf("Malloc failed for %s line %d\n", file, line);
@@ -113,7 +121,8 @@ void* mymalloc(size_t size,  char* file, int line ){
         newnode->blocklocation = &(memory[occupied+offset]);
         newnode->next = NULL;
 
-          
+        printf("newnode success\n");
+      
 
         return newnode->blocklocation;
 
@@ -145,7 +154,7 @@ void coalesce(metadata* first){
 
 void myfree(void* pointer,  char* file, int line){
 
-    char* lead = (char*)pointer; 
+     char* lead = (char*)pointer; 
     
     if(&(*lead) < &memory[0]){ // underbounds error 
         perror("Pointer underbounds of memory\n");
@@ -155,17 +164,64 @@ void myfree(void* pointer,  char* file, int line){
         perror("Pointer overbounds of memory\n");
         exit(EXIT_FAILURE);
     }
-    
-
     //search through all blocks to the correct one 
+
     metadata* iterator = (metadata*) &(memory[0]);
+
+    metadata* current = pointer-(sizeof(metadata));
+
+    while(iterator!=NULL){
+
+        if(iterator == current){
+            
+            if(current->istaken == 0 && current->blocksize > 0){
+
+                perror("Block already freed, cannot double free");
+                exit(EXIT_FAILURE);
+            }else if(current->istaken && current->blocksize == 0){
+                perror("Block is not allocated, cannot free");
+                exit(EXIT_FAILURE);
+
+            }
+
+            current->istaken =0; 
+            coalesce( (metadata*)&memory[0]);
+            return;
+        }
+
+        iterator = iterator->next;
+    }
+ 
+/*
+
+    if(current->istaken == 1){
+        current->istaken = 0; 
+        coalesce(iterator);
+        return; 
+    }else{
+        if( current->blocksize > 0 ){
+           // printf("%p ", &memory[0]);
+          //  printf("%p ", &memory[MEMSIZE-1]);
+           // printf("Pointer %p blocklocation %p", pointer, &*current);
+            perror("\nCannot free already freed block\n");
+            exit(EXIT_FAILURE);
+
+        }else{
+
+            perror("Cannot free non-allocated block\n");
+            exit(EXIT_FAILURE);
+        }
+
+    }
+    
+    
     metadata* prior = iterator;
-    char* specific = (char*)pointer; 
+  
      
 
     while(iterator != NULL){
 
-        if(specific == (iterator->blocklocation)){
+        if(&*specific == &*(iterator->blocklocation)){
             
 
             if(iterator->istaken == 0){
@@ -184,8 +240,8 @@ void myfree(void* pointer,  char* file, int line){
         prior = iterator; 
         iterator = iterator->next; 
 
-    }
-    
+    } 
+    */
     printf("Pointer %p does not point to the start of an allocated chunk\n", pointer);
     perror("Location address cannot be freed\n");
     exit(EXIT_FAILURE);
