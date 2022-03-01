@@ -11,7 +11,7 @@ typedef struct node { //this node type holds the metadata of each block. size of
     unsigned char buffer3;
     unsigned int blocksize; //size of requested block 
     struct node* next; //points to next metadata node; 
-    void* blocklocation;    //address of this node's block 
+    char* blocklocation;    //address of this node's block 
   
 
 } metadata;
