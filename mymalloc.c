@@ -5,7 +5,7 @@
 
 #define MEMSIZE 4096 //change number of memsize to change total memory space. 
 
-static char memory[MEMSIZE]; 
+static char memory[MEMSIZE];  
 
 
 void* mymalloc(size_t size,  char* file, int line ){
@@ -68,6 +68,7 @@ void* mymalloc(size_t size,  char* file, int line ){
                     candoccupied = occupied;
                 }
             }
+
             occupied = occupied + offset + iterator->blocksize;    //keeps track of total occupied space even if blocks are free. marks location of last free block
             
             if(iterator->next == NULL){
@@ -101,7 +102,7 @@ void* mymalloc(size_t size,  char* file, int line ){
 
         if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
             printf("Malloc failed for %s line %d\n", file, line);
-            perror("Not enough memory");
+            perror("Not enough memory, free allocated memory\n");
             exit(EXIT_FAILURE);
         }
 
@@ -111,6 +112,8 @@ void* mymalloc(size_t size,  char* file, int line ){
         newnode->blocksize = size; 
         newnode->blocklocation = &(memory[occupied+offset]);
         newnode->next = NULL;
+
+          
 
         return newnode->blocklocation;
 
@@ -152,7 +155,7 @@ void myfree(void* pointer,  char* file, int line){
         perror("Pointer overbounds of memory\n");
         exit(EXIT_FAILURE);
     }
-
+    
 
     //search through all blocks to the correct one 
     metadata* iterator = (metadata*) &(memory[0]);
