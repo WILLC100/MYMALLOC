@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <time.h>
+#include "mymalloc.h"
 
 int main(int argc, char* argv[])
 {   
+
+  
     unsigned int arraysize = 256;
     int *ptr[arraysize];
     struct timeval startTime;
@@ -24,7 +27,12 @@ int main(int argc, char* argv[])
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
             ptr[j] = (int *) malloc(1);
+
+           // printf("Malloc %d", i );
+
             free(ptr[j]);
+
+           // printf("Free %d ", i);
             ptr[j] = NULL;
         }
         gettimeofday(&endTime, 0);
@@ -33,7 +41,14 @@ int main(int argc, char* argv[])
     }
     
     printf("The average time to execute Test 1 %f milliseconds\n", totalTimeOne/50);
-    
+
+     for(int i =0; i<arraysize;i++){ //free the whole array 
+        if(ptr[i] != NULL){
+         //   printf("%d\n", i);
+            free(ptr[i]);
+            ptr[i] = NULL;
+        }
+     }
     //Test2
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
@@ -43,7 +58,7 @@ int main(int argc, char* argv[])
         }
         for(int j = 0; j < 120; j++){
             free(ptr[j]);
-           // printf("Free %d\n", j);
+            //printf("Free %d\n", j);
             ptr[j] = NULL;
         }
         //printf("%d", i);
@@ -53,13 +68,23 @@ int main(int argc, char* argv[])
     }
 
      printf("The average time to execute Test 2 %f milliseconds\n", totalTimeTwo/50);
+
+      for(int i =0; i<arraysize;i++){ //free the whole array 
+        if(ptr[i] != NULL){
+           // printf("%d\n", i);
+            free(ptr[i]);
+            ptr[i] = NULL;
+        }
+      }
     
     //Test3
+
+        
 
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         int current = 0; 
-        
+        int freecount= 0;
         
         srand(time(NULL));
         
@@ -67,22 +92,30 @@ int main(int argc, char* argv[])
             int randomNumber = rand() % 2;
             // malloc
             if(randomNumber == 0){
+                 
                 ptr[current] = (int*) malloc(1);
 
-               // printf("Malloc %d\n", current);
+               printf("Malloc %d\n", current);
+               printf("Malloc pointer %p\n", ptr[current]);
+               
                 current++;
             }
             // free
             else{
+               
                 
                for(int i =0; i<arraysize; i++){
 
                    if(ptr[i] != NULL){
+                        printf("Free %d\n", freecount);
                       // printf("Free %d \n",i);
+                        printf("Pointer %p\n", ptr[i]);
                         free(ptr[i]);
                         ptr[i] = NULL;  
+                        freecount++;
                         break;
                    }
+
                }                                
             }          
         }
@@ -100,9 +133,6 @@ int main(int argc, char* argv[])
         
     }
     }
-    
- 
-
 
 
      printf("The average time to execute Test 3 %f milliseconds\n", totalTimeThree/50);
@@ -132,9 +162,6 @@ int main(int argc, char* argv[])
     
     printf("The average time to execute Test 4 %f milliseconds\n", totalTimeFour/50);
 
-    
-    printf("%p\n", &memory[0]);
-    
 
     // Test5
 
