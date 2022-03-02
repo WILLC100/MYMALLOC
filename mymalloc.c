@@ -41,15 +41,14 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     if(first->istaken ==0 && first->blocksize == 0){ //first node check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
 
-        printf("First success");
+        printf("First success\n");
         first->istaken = 1; 
         first->blocksize = size; 
-        first->blocklocation = &(memory[offset]); 
         first->next = NULL;
      
-        return first->blocklocation; 
+        return &(memory[offset]); 
 
-    }else{
+    }else{ // first is allocated and is/isnot taken 
 
         //Gets to the next usable location 
         unsigned int occupied = 0; 
@@ -57,19 +56,23 @@ void* mymalloc(size_t size,  char* file, int line ){
         metadata* iterator = first; 
         metadata* end = NULL;
         metadata* candidate = NULL;
+     //   metadata* iprior = iterator;
+      //  metadata* candprior = NULL;
         unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
 
         while(iterator !=NULL){  
             
-
-            if(iterator ->istaken == 0 && iterator->blocksize >= size){ // keeps track of best usable location based on size
+            printf("Distance %d ", occupied);
+            if(iterator->istaken == 0 && iterator->blocksize >= size){ // keeps track of best usable location based on size
                 
-                if(iterator->blocksize - size <= candidatediff){ //minimum
+                if(iterator->blocksize - size < candidatediff){ //minimum
                     
                     candidatediff = iterator->blocksize - size; 
                     candidate = iterator;     
+                   // candprior = iprior;
                     candoccupied = occupied;
+
                 }
             }
 
@@ -78,6 +81,8 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(iterator->next == NULL){
                 end = iterator; 
             }
+            printf("Address iterator %p\n", iterator);
+          //  iprior = iterator; 
             iterator = iterator->next;
         }
     
@@ -88,20 +93,24 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(candidate->blocksize - size > offset){ // if the memory block is large enough to partition into an occupied smaller block + free block
                 
                 metadata* freenode = (metadata*)&(memory[offset+candoccupied+size]);
+
+                
               
                 candidate->blocksize = size; 
                 metadata* temp = candidate->next; 
                 candidate->next = freenode; 
-                freenode->next = temp; 
-
-                freenode->istaken = 0; 
-                freenode->blocklocation = &(memory[candoccupied+offset+size+offset]);
-                freenode->blocksize = candidate->blocksize-size-offset;
                 
+                freenode->next = temp; 
+                freenode->istaken = 0; 
+                freenode->blocksize = (((candidate->blocksize)-size)-offset);
+                
+            } 
+            if((metadata*)&memory[0] == candidate){
+                printf("Candidate is first\n");
             }
-            printf("Candidate Success \n");
+            printf("Candidate Success %d\n", candoccupied);
  
-            return candidate->blocklocation; 
+            return &(memory[candoccupied+offset]); 
 
         }
 
@@ -118,13 +127,12 @@ void* mymalloc(size_t size,  char* file, int line ){
         end->next = newnode; 
         newnode->istaken = 1; 
         newnode->blocksize = size; 
-        newnode->blocklocation = &(memory[occupied+offset]);
         newnode->next = NULL;
 
-        printf("newnode success\n");
+        printf("newnode success %d\n", occupied);
       
 
-        return newnode->blocklocation;
+        return &(memory[occupied+offset]);
 
     }
     return NULL;
@@ -143,6 +151,7 @@ void coalesce(metadata* first){
 
             current->next = cnext->next; 
             current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
+            printf("COALESCE NEW SIZE %d\n", current->blocksize);
 
         }
         current = current->next;
@@ -153,6 +162,12 @@ void coalesce(metadata* first){
 }
 
 void myfree(void* pointer,  char* file, int line){
+
+    if(pointer ==NULL){
+
+        perror("Null Pointer Exception");
+        exit(EXIT_FAILURE);
+    }
 
      char* lead = (char*)pointer; 
     
@@ -168,27 +183,47 @@ void myfree(void* pointer,  char* file, int line){
 
     metadata* iterator = (metadata*) &(memory[0]);
 
+    metadata* prior = iterator;
+
     metadata* current = pointer-(sizeof(metadata));
+
+    if(current == iterator ){ //for the first node
+        iterator->istaken =0; 
+
+        printf("Free first\n");
+        return;
+    }
 
     while(iterator!=NULL){
 
+        printf(" 1 ");
+
         if(iterator == current){
             
-            if(current->istaken == 0 && current->blocksize > 0){
+            if(current->istaken == 0 && current->blocksize > 0){ // free block
 
                 perror("Block already freed, cannot double free");
                 exit(EXIT_FAILURE);
-            }else if(current->istaken && current->blocksize == 0){
+            }else if(current->istaken == 0 && current->blocksize == 0){ //not allocated block
                 perror("Block is not allocated, cannot free");
                 exit(EXIT_FAILURE);
 
             }
 
             current->istaken =0; 
+            if(current->next == NULL){ //if the block is the last in the chain.
+                current->blocksize =0;
+              prior->next=NULL;
+
+              printf("Free end\n");
+              return;
+            }
             coalesce( (metadata*)&memory[0]);
+
+            printf("Free not first\n");
             return;
         }
-
+        prior = iterator;
         iterator = iterator->next;
     }
  
