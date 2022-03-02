@@ -259,56 +259,6 @@ void myfree(void* pointer,  char* file, int line){
         iterator = iterator->next;
     }
  
-/*
-
-    if(current->istaken == 1){
-        current->istaken = 0; 
-        coalesce(iterator);
-        return; 
-    }else{
-        if( current->blocksize > 0 ){
-           // printf("%p ", &memory[0]);
-          //  printf("%p ", &memory[MEMSIZE-1]);
-           // printf("Pointer %p blocklocation %p", pointer, &*current);
-            perror("\nCannot free already freed block\n");
-            exit(EXIT_FAILURE);
-
-        }else{
-
-            perror("Cannot free non-allocated block\n");
-            exit(EXIT_FAILURE);
-        }
-
-    }
-    
-    
-    metadata* prior = iterator;
-  
-     
-
-    while(iterator != NULL){
-
-        if(&*specific == &*(iterator->blocklocation)){
-            
-
-            if(iterator->istaken == 0){
-                
-                perror("Block has already been freed, cannot double free\n");
-                exit(EXIT_FAILURE);
-            }
-
-
-            iterator->istaken = 0;
-            coalesce(prior);
-           
-            return; 
-        }
-
-        prior = iterator; 
-        iterator = iterator->next; 
-
-    } 
-    */
     printf("Pointer %p does not point to the start of an allocated chunk\n", pointer);
     perror("Location address cannot be freed\n");
     exit(EXIT_FAILURE);
