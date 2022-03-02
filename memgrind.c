@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         + (endTime.tv_usec-startTime.tv_usec));
     }
     
-    printf("The average time to execute Test 1 %f milliseconds\n", totalTimeOne/50);
+    printf("The average time to execute Test 1 %f microseconds\n", totalTimeOne/50);
 
      for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         + (endTime.tv_usec-startTime.tv_usec));
     }
 
-     printf("The average time to execute Test 2 %f milliseconds\n", totalTimeTwo/50);
+     printf("The average time to execute Test 2 %f microseconds\n", totalTimeTwo/50);
 
       for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
     }
 
 
-     printf("The average time to execute Test 3 %f milliseconds\n", totalTimeThree/50);
+     printf("The average time to execute Test 3 %f microseconds\n", totalTimeThree/50);
 
     for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
         }
     }
     
-    printf("The average time to execute Test 4 %f milliseconds\n", totalTimeFour/50);
+    printf("The average time to execute Test 4 %f microseconds\n", totalTimeFour/50);
 
 
     // Test5
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 
     
     
-    printf("The average time to execute Test 5 %f milliseconds\n", totalTimeFive/50);
+    printf("The average time to execute Test 5 %f microseconds\n", totalTimeFive/50);
 
     
     
