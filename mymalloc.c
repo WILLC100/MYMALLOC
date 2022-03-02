@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-#define MEMSIZE 5120 //change number of memsize to change total memory space. 
+#define MEMSIZE 4096 //change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE];  
 
