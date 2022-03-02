@@ -93,7 +93,7 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(candidate->blocksize - size > offset){ // if the memory block is large enough to partition into an occupied smaller block + free block
                 
                 metadata* freenode = (metadata*)&(memory[offset+candoccupied+size]);
-
+                freenode->blocksize = (((candidate->blocksize)-size)-offset);
                 
               
                 candidate->blocksize = size; 
@@ -102,7 +102,7 @@ void* mymalloc(size_t size,  char* file, int line ){
                 
                 freenode->next = temp; 
                 freenode->istaken = 0; 
-                freenode->blocksize = (((candidate->blocksize)-size)-offset);
+                
                 
             } 
             if((metadata*)&memory[0] == candidate){
@@ -143,21 +143,69 @@ void coalesce(metadata* first){
 
     metadata* current = first;
     metadata* cnext = first->next; 
+    int coal = 0;
 
-    while(cnext != NULL){
-       
-        
+    if(cnext == NULL){
+        return;
+    }
+
+    if(current->istaken == 0 && cnext->istaken ==0){ //in the case that the prior and current node are free, coalesce. 
+
+        current->next = cnext->next; 
+        current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
+        printf("COALESCE NEW SIZE %d\n", current->blocksize);
+
+        coal = 1;
+
+    } 
+
+
+
+
+    metadata* c2 = cnext->next; 
+
+    if(c2 == NULL){ //no after node after current node, can return empty
+
+        return;
+    }
+
+    if(coal == 1 && c2->istaken ==0){ // if first 2 coalesced, coalesce the first and third node. 
+
+        current->next = c2->next; 
+        current->blocksize = sizeof(metadata) + current->blocksize + c2->blocksize; 
+        printf("COALESCE NEW SIZE %d\n", current->blocksize);
+
+        return;
+
+    }else if (coal == 0 && cnext->istaken==0 && c2->istaken == 0){ // if first 2 did not coalesce, check if second and third are free, coalesce
+
+        cnext->next = c2->next;
+        cnext->blocksize = sizeof(metadata ) + cnext->blocksize + c2->blocksize;
+        printf("COALESCE NEW SIZE %d\n", cnext->blocksize);
+
+        return; 
+    }else{ //no coalesce scenario
+
+        return; 
+    }
+
+    
+
+  /*  while(cnext != NULL){
+           
         if(current->istaken == 0 && cnext->istaken == 0){
 
             current->next = cnext->next; 
             current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
             printf("COALESCE NEW SIZE %d\n", current->blocksize);
+ 
 
         }
-        current = current->next;
+        
         cnext = cnext->next; 
-    }
-    return; 
+        
+    } */
+    
  
 }
 
@@ -218,7 +266,7 @@ void myfree(void* pointer,  char* file, int line){
               printf("Free end\n");
               return;
             }
-            coalesce( (metadata*)&memory[0]);
+            coalesce( prior);
 
             printf("Free not first\n");
             return;
