@@ -7,22 +7,23 @@
 int main(int argc, char* argv[])
 {   
 
+
   
     unsigned int arraysize = 256;
     int *ptr[arraysize];
     struct timeval startTime;
     struct timeval endTime;
-    float totalTimeOne = 0;
-    float totalTimeTwo = 0;
+  //  float totalTimeOne = 0;
+  //  float totalTimeTwo = 0;
     float totalTimeThree = 0;
-    float totalTimeFour = 0;
-    float totalTimeFive = 0;
+   // float totalTimeFour = 0;
+   // float totalTimeFive = 0;
 
     for(int i =0;i<arraysize;i++){
         ptr[i] = NULL;
     }
     
-    //Test1
+ /*   //Test1
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
@@ -48,9 +49,9 @@ int main(int argc, char* argv[])
             free(ptr[i]);
             ptr[i] = NULL;
         }
-     }
+     }  
     //Test2
-    for(int i = 0; i < 50; i++){
+      for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
             ptr[j] = (int *) malloc(1);
@@ -76,7 +77,8 @@ int main(int argc, char* argv[])
             ptr[i] = NULL;
         }
       }
-    
+      
+     */
     //Test3
 
         
@@ -96,7 +98,7 @@ int main(int argc, char* argv[])
                 ptr[current] = (int*) malloc(1);
 
                printf("Malloc %d\n", current);
-               printf("Malloc pointer %p\n", ptr[current]);
+               printf("Malloc pointer %p\n\n", ptr[current]);
                
                 current++;
             }
@@ -107,10 +109,11 @@ int main(int argc, char* argv[])
                for(int i =0; i<arraysize; i++){
 
                    if(ptr[i] != NULL){
-                        printf("Free %d\n", freecount);
+                        printf("    Free %d\n", freecount);
                       // printf("Free %d \n",i);
-                        printf("Pointer %p\n", ptr[i]);
+                        
                         free(ptr[i]);
+                        printf("    Pointer %p\n\n", ptr[i]);
                         ptr[i] = NULL;  
                         freecount++;
                         break;
@@ -136,7 +139,7 @@ int main(int argc, char* argv[])
 
 
      printf("The average time to execute Test 3 %f milliseconds\n", totalTimeThree/50);
-    
+  /*  
     // Test4
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
@@ -219,7 +222,7 @@ int main(int argc, char* argv[])
 
     
 
-
+ */
 
     return 0;
 }
