@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-#define MEMSIZE 4096 //change number of memsize to change total memory space. 
+#define MEMSIZE 5120 //change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE];  
 
@@ -119,9 +119,9 @@ void* mymalloc(size_t size,  char* file, int line ){
 
 
         if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
-            printf("Malloc failed for %s line %d\n", file, line);
-            perror("Not enough memory, free allocated memory\n");
-            exit(EXIT_FAILURE);
+           // printf("Malloc failed for %s line %d\n", file, line);
+             
+            return NULL;
         }
 
         metadata* newnode = (metadata*)&(memory[occupied]);
