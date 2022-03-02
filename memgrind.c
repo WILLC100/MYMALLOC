@@ -9,21 +9,21 @@ int main(int argc, char* argv[])
 
 
   
-    unsigned int arraysize = 256;
+    unsigned int arraysize = 128;
     int *ptr[arraysize];
     struct timeval startTime;
     struct timeval endTime;
-  //  float totalTimeOne = 0;
-  //  float totalTimeTwo = 0;
+    float totalTimeOne = 0;
+    float totalTimeTwo = 0;
     float totalTimeThree = 0;
-   // float totalTimeFour = 0;
-   // float totalTimeFive = 0;
+    float totalTimeFour = 0;
+    float totalTimeFive = 0;
 
     for(int i =0;i<arraysize;i++){
         ptr[i] = NULL;
     }
     
- /*   //Test1
+    //Test1
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
         }
       }
       
-     */
+     
     //Test3
 
         
@@ -97,8 +97,8 @@ int main(int argc, char* argv[])
                  
                 ptr[current] = (int*) malloc(1);
 
-               printf("Malloc %d\n", current);
-               printf("Malloc pointer %p\n\n", ptr[current]);
+             //  printf("Malloc %d\n", current);
+             //  printf("Malloc pointer %p\n\n", ptr[current]);
                
                 current++;
             }
@@ -109,11 +109,11 @@ int main(int argc, char* argv[])
                for(int i =0; i<arraysize; i++){
 
                    if(ptr[i] != NULL){
-                        printf("    Free %d\n", freecount);
+                       // printf("    Free %d\n", freecount);
                       // printf("Free %d \n",i);
                         
                         free(ptr[i]);
-                        printf("    Pointer %p\n\n", ptr[i]);
+                       // printf("    Pointer %p\n\n", ptr[i]);
                         ptr[i] = NULL;  
                         freecount++;
                         break;
@@ -139,13 +139,21 @@ int main(int argc, char* argv[])
 
 
      printf("The average time to execute Test 3 %f milliseconds\n", totalTimeThree/50);
-  /*  
+
+    for(int i =0; i<arraysize;i++){ //free the whole array 
+        if(ptr[i] != NULL){
+         //   printf("%d\n", i);
+            free(ptr[i]);
+            ptr[i] = NULL;
+        }
+     }  
+    
     // Test4
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < arraysize; j++){
-            ptr[j] = malloc(rand()%3+1);
-           // printf("Malloc %p\n", ptr[j]);
+            ptr[j] = malloc(rand()%8+1);
+         
         }
          
         gettimeofday(&endTime, 0);
@@ -168,8 +176,6 @@ int main(int argc, char* argv[])
 
     // Test5
 
-     
-    unsigned int canmalloc = 1; // true 
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         
@@ -177,20 +183,11 @@ int main(int argc, char* argv[])
         int mallocIndex = 0;
         int freeIndex = 0;
         
-        while(canmalloc != 0){
-
-            if((ptr[mallocIndex] = malloc(50))){
-                canmalloc = 0;
-                continue;
-            }
-
-            printf("current %d\n", current);
+        while((ptr[mallocIndex] = malloc(50)) !=NULL){
             current++;
             mallocIndex++;
         }
-            
         for(freeIndex = 0; freeIndex < mallocIndex; freeIndex+=2){
-            printf("freeIndex %d", freeIndex);
             free(ptr[freeIndex]); 
             ptr[mallocIndex] = NULL;
         }
@@ -204,17 +201,7 @@ int main(int argc, char* argv[])
         gettimeofday(&endTime, 0);
         totalTimeFive = totalTimeFive + ((endTime.tv_sec-startTime.tv_sec)*1000000
         + (endTime.tv_usec-startTime.tv_usec));
-
-        for(int i =0; i<arraysize;i++){
-
-        if(ptr[i] != NULL){
-            free(ptr[i]);
-            ptr[i] = NULL;
-        }
-        
     }
-    }
-    
 
     
     
@@ -222,7 +209,7 @@ int main(int argc, char* argv[])
 
     
 
- */
+ 
 
     return 0;
 }
