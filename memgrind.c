@@ -176,22 +176,37 @@ int main(int argc, char* argv[])
 
     // Test5
 
+    
+    for(int i =0; i<arraysize;i++){ //free the whole array 
+        if(ptr[i] != NULL){
+         //   printf("%d\n", i);
+            free(ptr[i]);
+            ptr[i] = NULL;
+        }
+        
+     }  
+
+  
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
+        
         
         int current = 1;
         int mallocIndex = 0;
         int freeIndex = 0;
+        ptr[mallocIndex] = malloc(50);
         
-        while((ptr[mallocIndex] = malloc(50)) !=NULL){
+        while( ptr[mallocIndex] !=NULL){
             current++;
             mallocIndex++;
+           // printf("%d Malloc\n", mallocIndex);
+            ptr[mallocIndex] = malloc(50);
         }
         for(freeIndex = 0; freeIndex < mallocIndex; freeIndex+=2){
             free(ptr[freeIndex]); 
             ptr[mallocIndex] = NULL;
         }
-        for(mallocIndex = 0; mallocIndex < current-1; current+=2){
+        for(mallocIndex = 0; mallocIndex < current-1; mallocIndex+=2){
             ptr[mallocIndex] = malloc(35);
         }
         for(freeIndex = 0; freeIndex < current-1; freeIndex+=1){
@@ -208,7 +223,7 @@ int main(int argc, char* argv[])
     printf("The average time to execute Test 5 %f milliseconds\n", totalTimeFive/50);
 
     
-
+    
  
 
     return 0;
