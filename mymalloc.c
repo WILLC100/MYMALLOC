@@ -41,7 +41,7 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     if(first->istaken ==0 && first->blocksize == 0){ //first node check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
 
-        printf("First success\n");
+       // printf("First success\n");
         first->istaken = 1; 
         first->blocksize = size; 
         first->next = NULL;
@@ -63,7 +63,7 @@ void* mymalloc(size_t size,  char* file, int line ){
 
         while(iterator !=NULL){  
             
-            printf("Distance %d ", occupied);
+            //printf("Distance %d ", occupied);
             if(iterator->istaken == 0 && iterator->blocksize >= size){ // keeps track of best usable location based on size
                 
                 if(iterator->blocksize - size < candidatediff){ //minimum
@@ -81,7 +81,7 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(iterator->next == NULL){
                 end = iterator; 
             }
-            printf("Address iterator %p\n", iterator);
+           // printf("Address iterator %p\n", iterator);
           //  iprior = iterator; 
             iterator = iterator->next;
         }
@@ -105,10 +105,11 @@ void* mymalloc(size_t size,  char* file, int line ){
                 
                 
             } 
-            if((metadata*)&memory[0] == candidate){
+         /*  if((metadata*)&memory[0] == candidate){
                 printf("Candidate is first\n");
             }
             printf("Candidate Success %d\n", candoccupied);
+            */
  
             return &(memory[candoccupied+offset]); 
 
@@ -129,7 +130,7 @@ void* mymalloc(size_t size,  char* file, int line ){
         newnode->blocksize = size; 
         newnode->next = NULL;
 
-        printf("newnode success %d\n", occupied);
+      //  printf("newnode success %d\n", occupied);
       
 
         return &(memory[occupied+offset]);
@@ -153,7 +154,7 @@ void coalesce(metadata* first){
 
         current->next = cnext->next; 
         current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
-        printf("COALESCE NEW SIZE %d\n", current->blocksize);
+      //  printf("COALESCE NEW SIZE %d\n", current->blocksize);
 
         coal = 1;
 
@@ -173,7 +174,7 @@ void coalesce(metadata* first){
 
         current->next = c2->next; 
         current->blocksize = sizeof(metadata) + current->blocksize + c2->blocksize; 
-        printf("COALESCE NEW SIZE %d\n", current->blocksize);
+      //  printf("COALESCE NEW SIZE %d\n", current->blocksize);
 
         return;
 
@@ -181,30 +182,13 @@ void coalesce(metadata* first){
 
         cnext->next = c2->next;
         cnext->blocksize = sizeof(metadata ) + cnext->blocksize + c2->blocksize;
-        printf("COALESCE NEW SIZE %d\n", cnext->blocksize);
+      //  printf("COALESCE NEW SIZE %d\n", cnext->blocksize);
 
         return; 
     }else{ //no coalesce scenario
 
         return; 
     }
-
-    
-
-  /*  while(cnext != NULL){
-           
-        if(current->istaken == 0 && cnext->istaken == 0){
-
-            current->next = cnext->next; 
-            current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
-            printf("COALESCE NEW SIZE %d\n", current->blocksize);
- 
-
-        }
-        
-        cnext = cnext->next; 
-        
-    } */
     
  
 }
@@ -238,13 +222,13 @@ void myfree(void* pointer,  char* file, int line){
     if(current == iterator ){ //for the first node
         iterator->istaken =0; 
 
-        printf("Free first\n");
+       // printf("Free first\n");
         return;
     }
 
     while(iterator!=NULL){
 
-        printf(" 1 ");
+       // printf(" 1 ");
 
         if(iterator == current){
             
@@ -263,12 +247,12 @@ void myfree(void* pointer,  char* file, int line){
                 current->blocksize =0;
               prior->next=NULL;
 
-              printf("Free end\n");
+             // printf("Free end\n");
               return;
             }
             coalesce( prior);
 
-            printf("Free not first\n");
+           // printf("Free not first\n");
             return;
         }
         prior = iterator;
