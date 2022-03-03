@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-#define MEMSIZE 4096 //change number of memsize to change total memory space. 
+//change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE];  
 
@@ -17,7 +17,8 @@ void* mymalloc(size_t size,  char* file, int line ){
     if(size == 0){
         printf("Malloc failed for file %s line %d\n", file, line);
         perror("Cannot allocate 0 memory\n");
-        exit(EXIT_FAILURE);
+       // exit(EXIT_FAILURE);
+       return NULL;
     }
 
     //alighnment protocol. Gets buffer to some value divisible by 4. Clean
@@ -31,7 +32,8 @@ void* mymalloc(size_t size,  char* file, int line ){
     if(size > (MEMSIZE - offset)){ 
             printf("Malloc failed for %s line %d\n", file, line);
             perror("Not enough memory.\n");
-            exit(EXIT_FAILURE);
+            //exit(EXIT_FAILURE);
+           return NULL;
     }
     //Allocations 
 
@@ -108,7 +110,10 @@ void* mymalloc(size_t size,  char* file, int line ){
         //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
 
         if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
-           // printf("Malloc failed for %s line %d\n", file, line);          
+            printf("Malloc failed for %s line %d\n", file, line);
+            printf("Not enough free memory for allocation. %ld Total bytes needed. %d Total bytes available.\n", size+offset, MEMSIZE-occupied);    
+            perror("Malloc runtime error");
+           // exit(EXIT_FAILURE);
             return NULL;
         }
 
@@ -175,67 +180,68 @@ void coalesce(metadata* first){
 
 void myfree(void* pointer,  char* file, int line){
 
-    if(pointer ==NULL){
-        perror("Null Pointer Exception");
-        exit(EXIT_FAILURE);
+    char* lead = (char*)pointer; 
+    if(pointer == NULL){
+        printf("Failed free for file %s line %d\n", file, line);
+        perror("Cannot Free, Null Pointer Exception\n");
+       // exit(EXIT_FAILURE);
+       return;
     }
 
-    char* lead = (char*)pointer; 
     
-    if(&(*lead) < &memory[0]){ // underbounds error 
-        perror("Pointer underbounds of memory\n");
-        exit(EXIT_FAILURE);
+    
+    if(&(*lead) < &memory[0] || &(*lead) > &memory[MEMSIZE-1]){ // Out of bounds error 
+        printf("Failed free for file %s line %d\n", file, line);
+        perror("Pointer out of bounds of memory\n");
+      //  exit(EXIT_FAILURE);
+      return;
     }
-    if(&(*lead) > &memory[MEMSIZE-1]){ // overbounds error 
-        perror("Pointer overbounds of memory\n");
-        exit(EXIT_FAILURE);
-    }
+    
     //search through all blocks to the correct one 
 
     metadata* iterator = (metadata*) &(memory[0]);
     metadata* prior = iterator;
     metadata* current = pointer-(sizeof(metadata));
 
-    if(current == iterator ){ //for the first node
-        iterator->istaken =0; 
-       // printf("Free first\n");
-        return;
-    }
+    
 
     while(iterator!=NULL){
        // printf(" 1 ");
         if(iterator == current){
             
             if(current->istaken == 0 && current->blocksize > 0){ // free block
-                perror("Block already freed, cannot double free");
-                exit(EXIT_FAILURE);
+                printf("Block is not allocated, cannot free at address %p\n Failed free for file %s line %d\n", current, file, line);
+                perror("Double free\n");
+               // exit(EXIT_FAILURE);
+               return;
             }else if(current->istaken == 0 && current->blocksize == 0){ //not allocated block
-                perror("Block is not allocated, cannot free");
-                exit(EXIT_FAILURE);
+                 printf("Block is not allocated, cannot free at address %p\n Failed free for file %s line %d\n", current, file, line);
+                perror("Cannot free unallocated block\n");
+               // exit(EXIT_FAILURE);
+               return;
             }
             current->istaken =0; 
                 if(current->next == NULL){ //if the block is the last in the chain.
                     current->blocksize =0;
                     prior->next=NULL;
 
-             // printf("Free end\n");
                     return;
                 }
             coalesce( prior);
 
-           // printf("Free not first\n");
             return;
         }
         prior = iterator;
         iterator = iterator->next;
     }
  
-    printf("Pointer %p does not point to the start of an allocated chunk\n", pointer);
+    printf("Pointer %p does not point to the start of an allocated chunk\n Failed free for file %s line %d\n", pointer, file, line);
     perror("Location address cannot be freed\n");
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
 
     return;
 }
+
 
 
  
