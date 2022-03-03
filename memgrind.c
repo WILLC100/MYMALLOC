@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         ptr[i] = NULL;
     }
     
-    //Test1
+    //Test1 See Documentation
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         + (endTime.tv_usec-startTime.tv_usec));
     }
     
-    printf("The average time to execute Test 1 %f microseconds\n", totalTimeOne/50);
+    
 
      for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             ptr[i] = NULL;
         }
      }  
-    //Test2
+    //Test2 See Documentation 
       for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         + (endTime.tv_usec-startTime.tv_usec));
     }
 
-     printf("The average time to execute Test 2 %f microseconds\n", totalTimeTwo/50);
+     
 
       for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -79,9 +79,7 @@ int main(int argc, char* argv[])
       }
       
      
-    //Test3
-
-        
+    //Test3 See Documentation
 
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
@@ -95,25 +93,16 @@ int main(int argc, char* argv[])
             // malloc
             if(randomNumber == 0){
                  
-                ptr[current] = (int*) malloc(1);
-
-             //  printf("Malloc %d\n", current);
-             //  printf("Malloc pointer %p\n\n", ptr[current]);
-               
+                ptr[current] = (int*) malloc(1);          
                 current++;
             }
             // free
-            else{
-               
-                
+            else{   
                for(int i =0; i<arraysize; i++){
 
                    if(ptr[i] != NULL){
-                       // printf("    Free %d\n", freecount);
-                      // printf("Free %d \n",i);
-                        
-                        free(ptr[i]);
-                       // printf("    Pointer %p\n\n", ptr[i]);
+            
+                        free(ptr[i]);              
                         ptr[i] = NULL;  
                         freecount++;
                         break;
@@ -138,7 +127,7 @@ int main(int argc, char* argv[])
     }
 
 
-     printf("The average time to execute Test 3 %f microseconds\n", totalTimeThree/50);
+     
 
     for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
@@ -148,7 +137,7 @@ int main(int argc, char* argv[])
         }
      }  
     
-    // Test4
+    // Test4 See Documentation 
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < arraysize; j++){
@@ -171,13 +160,9 @@ int main(int argc, char* argv[])
         }
     }
     
-    printf("The average time to execute Test 4 %f microseconds\n", totalTimeFour/50);
+   
 
-
-    // Test5
-
-    
-    for(int i =0; i<arraysize;i++){ //free the whole array 
+     for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
          //   printf("%d\n", i);
             free(ptr[i]);
@@ -186,6 +171,7 @@ int main(int argc, char* argv[])
         
      }  
 
+    // Test5 See Documentation
   
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
@@ -218,13 +204,73 @@ int main(int argc, char* argv[])
         + (endTime.tv_usec-startTime.tv_usec));
     }
 
-    
-    
-    printf("The average time to execute Test 5 %f microseconds\n", totalTimeFive/50);
+    printf("The average time to execute Test 1 %f microseconds\n", totalTimeOne/50);
+    printf("The average time to execute Test 2 %f microseconds\n", totalTimeTwo/50);
+    printf("The average time to execute Test 3 %f microseconds\n", totalTimeThree/50);
+    printf("The average time to execute Test 4 %f microseconds\n", totalTimeFour/50);
+    printf("The average time to execute Test 5 %f microseconds\n\n", totalTimeFive/50);
 
     
+    //Test 6 Prints Error if Malloc tries to allocate more than size of available memory 
+
+    printf("\n Test 6 \n");
+    void* test6 = malloc(MEMSIZE);
+    if(test6 == NULL){
+        printf("\n");
+    }
+
+    //Test 7 Prints Error if Malloc tries to allocate no memory
+
+    printf("\n Test 7 \n");
+    void* test7 = malloc(0);
+    if(test7 == NULL){
+        printf("\n");
+    }
     
- 
+    //Test 8 Prints Error if free void pointer 
+
+    printf("\n Test 8 \n");
+    void* test8 = NULL;
+    free(test8);
+
+    //Test 9 Prints Error if pointer not in bounds of memory 
+      printf("\n Test 9 \n");
+    void* test9 = (void*)1;
+    free(test9);
+    
+    //Test 10 Prints Error if pointer is freed twice 
+
+    printf("\n Test 10 \n");
+    void* test10 = malloc(1);
+    free(test10); 
+    free(test10);
+
+    //Test 11 Prints Error if pointer is not the start of a block
+    printf("\n Test 11\n");
+    int* test11 = malloc(sizeof(int)*2);
+    free(test11+1);
+    free(test11);
+
+    //Test 12 Prints Error if allocation runs out of space to assign 
+        printf("\n Test 12\n");
+    int count = 0;
+    ptr[count] = malloc(50);
+    while(ptr[count] != NULL){
+
+        count++;
+        ptr[count] = malloc(50);
+    }
+
+    for(int i=0; i<count; i++){
+        free(ptr[i]);
+    }
+    //Test 13 Prints Error if freeing a non-allocated block
+    printf("\n Test 13\n");
+    int* test13 = malloc(1); 
+    metadata* test13a = (metadata*)(test13-4); 
+    test13a->istaken =0; 
+    test13a->blocksize =0;
+    free(test13);
 
     return 0;
 }
