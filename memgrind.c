@@ -27,13 +27,9 @@ int main(int argc, char* argv[])
     for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
+           
             ptr[j] = (int *) malloc(1);
-
-           // printf("Malloc %d", i );
-
             free(ptr[j]);
-
-           // printf("Free %d ", i);
             ptr[j] = NULL;
         }
         gettimeofday(&endTime, 0);
@@ -50,19 +46,17 @@ int main(int argc, char* argv[])
             ptr[i] = NULL;
         }
      }  
+
     //Test2 See Documentation 
       for(int i = 0; i < 50; i++){
         gettimeofday(&startTime, 0);
         for(int j = 0; j < 120; j++){
             ptr[j] = (int *) malloc(1);
-           // printf("Malloc %d\n", j);
         }
         for(int j = 0; j < 120; j++){
             free(ptr[j]);
-            //printf("Free %d\n", j);
             ptr[j] = NULL;
         }
-        //printf("%d", i);
         gettimeofday(&endTime, 0);
         totalTimeTwo = totalTimeTwo + ((endTime.tv_sec-startTime.tv_sec)*1000000
         + (endTime.tv_usec-startTime.tv_usec));
@@ -117,7 +111,6 @@ int main(int argc, char* argv[])
         
         for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
-         //   printf("%d\n", i);
             free(ptr[i]);
             ptr[i] = NULL;
         }
@@ -131,7 +124,6 @@ int main(int argc, char* argv[])
 
     for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
-         //   printf("%d\n", i);
             free(ptr[i]);
             ptr[i] = NULL;
         }
@@ -164,7 +156,6 @@ int main(int argc, char* argv[])
 
      for(int i =0; i<arraysize;i++){ //free the whole array 
         if(ptr[i] != NULL){
-         //   printf("%d\n", i);
             free(ptr[i]);
             ptr[i] = NULL;
         }
@@ -185,7 +176,6 @@ int main(int argc, char* argv[])
         while( ptr[mallocIndex] !=NULL){
             current++;
             mallocIndex++;
-           // printf("%d Malloc\n", mallocIndex);
             ptr[mallocIndex] = malloc(50);
         }
         for(freeIndex = 0; freeIndex < mallocIndex; freeIndex+=2){
