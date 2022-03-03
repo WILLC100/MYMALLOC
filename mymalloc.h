@@ -2,6 +2,7 @@
 #ifndef _MYMALLOC_H_
 #define _MYMALLOC_H_ 
 
+#define MEMSIZE 4096 
 
 typedef struct node { //this node type holds the metadata of each block. size of 16. 
 
