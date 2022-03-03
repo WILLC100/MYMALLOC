@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "mymalloc.h"
 
-//change number of memsize to change total memory space. 
 
 static char memory[MEMSIZE];  
 
@@ -21,7 +20,7 @@ void* mymalloc(size_t size,  char* file, int line ){
        return NULL;
     }
 
-    //alighnment protocol. Gets buffer to some value divisible by 4. Clean
+    //alighnment protocol. Gets buffer to some value divisible by 4.  
   
     unsigned int remainder = size%4;
     remainder = 4-remainder; 
@@ -39,35 +38,30 @@ void* mymalloc(size_t size,  char* file, int line ){
 
     if(first->istaken ==0 && first->blocksize == 0){ //first node check. if 0: first block is free and unallocated create allocation immediately, else add to data structure
 
-       // printf("First success\n");
         first->istaken = 1; 
         first->blocksize = size; 
         first->next = NULL;
      
         return &(memory[offset]); 
 
-    }else{ // first is allocated and is/isnot taken 
+    }else{ // first node is allocated and is/isnot taken 
 
         //Gets to the next usable location 
         unsigned int occupied = 0; 
         metadata* iterator = first; 
         metadata* end = NULL;
         metadata* candidate = NULL;
-     //   metadata* iprior = iterator;
-      //  metadata* candprior = NULL;
         unsigned int candoccupied = 0;
         unsigned int candidatediff = MEMSIZE;
 
         while(iterator !=NULL){  
             
-            //printf("Distance %d ", occupied);
             if(iterator->istaken == 0 && iterator->blocksize >= size){ // keeps track of best usable location based on size
                 
                 if(iterator->blocksize - size < candidatediff){ //minimum
                     
                     candidatediff = iterator->blocksize - size; 
                     candidate = iterator;     
-                   // candprior = iprior;
                     candoccupied = occupied;
 
                 }
@@ -78,8 +72,7 @@ void* mymalloc(size_t size,  char* file, int line ){
             if(iterator->next == NULL){
                 end = iterator; 
             }
-           // printf("Address iterator %p\n", iterator);
-          //  iprior = iterator; 
+    
             iterator = iterator->next;
         }
     
@@ -99,17 +92,13 @@ void* mymalloc(size_t size,  char* file, int line ){
                 freenode->next = temp; 
                 freenode->istaken = 0;            
             } 
-         /*  if((metadata*)&memory[0] == candidate){
-                printf("Candidate is first\n");
-            }
-            printf("Candidate Success %d\n", candoccupied);
-         */
+     
             return &(memory[candoccupied+offset]); 
 
         }
         //arranges data for a new node at end of the chain if no suitable location within chain fouond. 
 
-        if( (size + occupied + offset ) > MEMSIZE){ // temp size error should update to be more encompassing. 
+        if( (size + occupied + offset ) > MEMSIZE){ // Full memory case
             printf("Malloc failed for %s line %d\n", file, line);
             printf("Not enough free memory for allocation. %ld Total bytes needed. %d Total bytes available.\n", size+offset, MEMSIZE-occupied);    
             perror("Malloc runtime error");
@@ -122,8 +111,7 @@ void* mymalloc(size_t size,  char* file, int line ){
         newnode->istaken = 1; 
         newnode->blocksize = size; 
         newnode->next = NULL;
-
-      //  printf("newnode success %d\n", occupied)
+ 
         return &(memory[occupied+offset]);
 
     }
@@ -145,7 +133,7 @@ void coalesce(metadata* first){
 
         current->next = cnext->next; 
         current->blocksize = sizeof(metadata) + current->blocksize + cnext->blocksize; 
-      //  printf("COALESCE NEW SIZE %d\n", current->blocksize);
+        //printf("COALESCE NEW SIZE %d\n", current->blocksize);
         coal = 1;
 
     } 
@@ -206,7 +194,7 @@ void myfree(void* pointer,  char* file, int line){
     
 
     while(iterator!=NULL){
-       // printf(" 1 ");
+
         if(iterator == current){
             
             if(current->istaken == 0 && current->blocksize > 0){ // free block
